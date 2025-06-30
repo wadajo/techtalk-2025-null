@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.wadajo.nulltechtalk.model.Obra;
 import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,6 +21,8 @@ import java.util.List;
 
 @Controller
 public class GeneralController {
+
+    private static final Logger log = LoggerFactory.getLogger(GeneralController.class);
 
     @Value("${artworks.base-url}")
     @SuppressWarnings("NullAway.Init")
@@ -42,6 +46,10 @@ public class GeneralController {
 
         Assert.notNull(rawResponse, "rawResponse is null");
         var obraRandom = getObra(rawResponse);
+
+        log.info("Título de la obra: "+obraRandom.title());
+        log.info("¿El año de la obra fue bisiesto?: "+obraRandom.date_end().isLeap());
+        log.info("Longitud de la descripción de la obra: "+obraRandom.description().length());
 
         return ResponseEntity.ok(obraRandom);
     }
