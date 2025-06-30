@@ -20,8 +20,10 @@ import java.util.List;
 public class GeneralController {
 
     @Value("${artworks.base-url}")
+    @SuppressWarnings("NullAway.Init")
     private String endpointUrl;
 
+    @SuppressWarnings("NullAway.Init")
     private RestClient restClient;
 
     @PostConstruct
