@@ -39,11 +39,18 @@ public class GeneralController {
                 .retrieve()
                 .body(String.class);
 
-        var mapper = getObjectMapper();
-        var dataRawField = mapper.readTree(rawResponse).get("data");
-        var obraRandomEnLista = mapper.readValue(dataRawField.traverse(), new TypeReference<List<Obra>>() {});
+        // advierte que la respuesta puede llegar siendo null -ver docs de Spring
+        var obraRandomEnLista = getObra(rawResponse);
+        // error de compilación: el parámetro debe ser @NonNull por package-info
 
         return ResponseEntity.ok(obraRandomEnLista.getFirst());
+    }
+
+    private static List<Obra> getObra(String rawResponse) throws IOException {
+        var mapper = getObjectMapper();
+        var dataRawField = mapper.readTree(rawResponse).get("data");
+        return mapper.readValue(dataRawField.traverse(), new TypeReference<>() {
+        });
     }
 
     private static ObjectMapper getObjectMapper() {
