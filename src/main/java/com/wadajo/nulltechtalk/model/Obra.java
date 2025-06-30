@@ -1,4 +1,4 @@
-package com.wadajo.nulltechtalk;
+package com.wadajo.nulltechtalk.model;
 
 import java.time.Year;
 

@@ -1,7 +1,8 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.5.3'
+    id 'org.springframework.boot' version '4.0.0-SNAPSHOT'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'net.ltgt.errorprone' version '4.1.0'
 }
 
 group = 'com.wadajo'
@@ -15,18 +16,42 @@ java {
 
 repositories {
     mavenCentral()
+    maven { url = 'https://repo.spring.io/milestone' }
+    maven { url = 'https://repo.spring.io/snapshot' }
 }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.jspecify:jspecify:1.0.0'
+    errorprone 'com.uber.nullaway:nullaway:0.12.7'
+    errorprone 'com.google.errorprone:error_prone_core:2.38.0'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'org.wiremock.integrations:wiremock-spring-boot:3.9.0'
     testImplementation 'commons-io:commons-io:2.14.0'
     testImplementation 'io.rest-assured:rest-assured:5.5.1'
+}
 
+tasks.withType(JavaCompile).configureEach {
+    options.errorprone {
+        disableAllChecks = true // Error prone verifica muchos tipos de errores ajenos a este demo
+        option("NullAway:OnlyNullMarked", "true") // Solo queremos verificar el código null-marked, no el resto
+        error("NullAway") // Queremos que los identifique no como warnings (default) sino como errores
+    }
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// esto evita el warning de que hay un agente inline de Mockito, explicitándolo a la JVM
+tasks.withType(Test).tap {
+    configureEach {
+        def mockitoAgent = configurations.testRuntimeClasspath.find {
+            it.name.contains('mockito-core')
+        }
+        if (mockitoAgent) {
+            jvmArgs "-javaagent:${mockitoAgent.absolutePath}"
+        }
+    }
 }
