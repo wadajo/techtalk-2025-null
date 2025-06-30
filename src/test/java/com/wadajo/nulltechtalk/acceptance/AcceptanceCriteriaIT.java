@@ -23,7 +23,7 @@ public class AcceptanceCriteriaIT {
                 .prettyPeek()
         .then()
                 .assertThat()
-                .body("[0].artist_title", Matchers.equalTo("Nasca"))
+                .body("artist_title", Matchers.equalTo("Nasca"))
                 .statusCode(200);
 
     }
