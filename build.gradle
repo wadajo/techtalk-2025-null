@@ -37,6 +37,7 @@ tasks.withType(JavaCompile).configureEach {
         disableAllChecks = true // Error prone verifica muchos tipos de errores ajenos a este demo
         option("NullAway:OnlyNullMarked", "true") // Solo queremos verificar el código null-marked, no el resto
         error("NullAway") // Queremos que los identifique no como warnings (default) sino como errores
+        option("NullAway:CustomContractAnnotations", "org.springframework.lang.Contract")
     }
 }
 

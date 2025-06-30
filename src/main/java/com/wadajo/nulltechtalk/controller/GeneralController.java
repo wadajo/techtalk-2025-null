@@ -10,6 +10,7 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.client.RestClient;
 
@@ -39,18 +40,17 @@ public class GeneralController {
                 .retrieve()
                 .body(String.class);
 
-        // advierte que la respuesta puede llegar siendo null -ver docs de Spring
-        var obraRandomEnLista = getObra(rawResponse);
-        // error de compilación: el parámetro debe ser @NonNull por package-info
+        Assert.notNull(rawResponse, "rawResponse is null");
+        var obraRandom = getObra(rawResponse);
 
-        return ResponseEntity.ok(obraRandomEnLista.getFirst());
+        return ResponseEntity.ok(obraRandom);
     }
 
-    private static List<Obra> getObra(String rawResponse) throws IOException {
+    private static Obra getObra(String rawResponse) throws IOException {
         var mapper = getObjectMapper();
         var dataRawField = mapper.readTree(rawResponse).get("data");
-        return mapper.readValue(dataRawField.traverse(), new TypeReference<>() {
-        });
+        return mapper.readValue(dataRawField.traverse(), new TypeReference<List<Obra>>() {
+        }).getFirst();
     }
 
     private static ObjectMapper getObjectMapper() {
