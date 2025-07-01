@@ -18,6 +18,7 @@ import org.springframework.web.client.RestClient;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 public class GeneralController {
@@ -49,7 +50,9 @@ public class GeneralController {
 
         log.info("Título de la obra: "+obraRandom.title());
         log.info("¿El año de la obra fue bisiesto?: "+obraRandom.date_end().isLeap());
-        log.info("Longitud de la descripción de la obra: "+obraRandom.description().length());
+        if (Objects.nonNull(obraRandom.description())) {
+            log.info("Longitud de la descripción de la obra: "+obraRandom.description().length());
+        }
 
         return ResponseEntity.ok(obraRandom);
     }
